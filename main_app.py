@@ -1,7 +1,6 @@
 from lib.deals_crawler import deal_finder
 import argparse
 import time
-import multiprocessing.pool
 
 
 
