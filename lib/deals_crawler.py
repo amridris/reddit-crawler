@@ -4,17 +4,16 @@ from urllib import request
 from lib.email_utility import email_utility
 from lib.email_utility import EmailMessage
 import smtplib
-
+from collections import deque
 
 class deal_finder:
 
     def __init__(self, search_term, _email, _email_password):
         self.search_keyword = search_term
-        self.amazon_deals = []
         self.email = email_utility(_email, _email_password)
         self.msg = ""
-        self.reddit_old_deals = []
-        self.reddit_new_deals = []
+        self.reddit_old_deals = deque(maxlen=20)
+        self.reddit_new_deals = deque(maxlen=20)
         self.empty_message = False
 
     
@@ -29,17 +28,9 @@ class deal_finder:
             if (name, link) not in self.reddit_old_deals:
                 body += name + '\n' + link + '\n'
                 
-        
         _msg.set_content(body)
         self.msg = _msg
-
-        if self.msg is None:
-            self.empty_message = True
-        else:
-            self.empty_message = False
-        
-        #copy new_deals into the old_deals variable
-        self.reddit_old_deals = self.reddit_new_deals
+    
 
 
     def send_deals(self, from_email, to_email):
@@ -66,9 +57,10 @@ class deal_finder:
         for tag_links in hardware_buy_soup.findAll(attrs={'data-click-id': 'body'}):
             links.append("www.reddit.com{}".format(tag_links['href']))
         
+    
         for x in range(len(links)):
-            if self.search_keyword.lower() in names[x].lower():
+            if self.search_keyword.lower() in names[x].lower() and (names[x], links[x]) not in self.reddit_old_deals:
                 self.reddit_new_deals.append((names[x], links[x]))
-        
+
 
 

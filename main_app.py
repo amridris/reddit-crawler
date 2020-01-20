@@ -22,9 +22,10 @@ if __name__ == '__main__':
         find_deals = deal_finder(args_input.keyword, args_input.email, args_input.password)
         print("Checking Reddit deals ...")
         find_deals.search_reddit()
-        if len(find_deals.reddit_new_deals) != 0 and not find_deals.empty_message:
+
+        if len(find_deals.reddit_new_deals) != 0 and find_deals.reddit_new_deals != find_deals.reddit_old_deals:
             find_deals.send_deals(args_input.email, args_input.email)
-            print("Found your item.. check your email")
+            find_deals.reddit_old_deals = find_deals.reddit_old_deals
 
         print("Sleeping..")
         time.sleep(5)
